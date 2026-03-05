@@ -1,0 +1,54 @@
+name: USD Rate Tracker
+
+on:
+  # Запуск при пуше (для тестов)
+  push:
+    branches: [ main, master ]
+  # Запуск по расписанию (Cron) - пример: каждый день в 00:00 UTC
+  schedule:
+    - cron: '0 04 * * *'
+  # Возможность ручного запуска из вкладки Actions
+  workflow_dispatch:
+
+# Разрешения для токена (важно для коммита обратно в репо)
+permissions:
+  contents: write
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Скачиваем код
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Нужно для истории git
+
+      # 2. Устанавливаем Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Или ваша версия
+
+      # 3. Устанавливаем зависимости
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Устанавливаем Chrome (на ubuntu-latest он обычно есть, но на всякий случай)
+      - name: Install Chrome
+        run: |
+          google-chrome --version || sudo apt-get install -y google-chrome-stable
+
+      # 5. Запускаем ваш скрипт
+      - name: Run Scraper
+        run: |
+          chmod +x ./node_modules/.bin/mocha
+          ./node_modules/.bin/mocha test/yandex.spec.js --timeout 3600000
+      # 6. Сохраняем изменения (CSV и PNG) обратно в репозиторий
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'Update USD rate chart and data [auto]'
+          file_pattern: 'reports/*.csv reports/*.png' # Укажите расширения ваших файлов
+          branch: main # Или master, в зависимости от вашей ветки
