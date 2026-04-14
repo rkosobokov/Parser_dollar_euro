@@ -65,13 +65,14 @@ describe('Проверка yandex страницы', function () {
     });
     it('Забрать доллар', async function () {
         // Попытка найти элемент с курсом доллара
-        const elements = await driver.findElements(By.xpath('/html/body/div[8]/div[2]/div[1]/div/div[1]/div/div/div[1]/div[2]/div[1]/a[1]/span'));
+        const elements = await driver.findElements(By.xpath('//*[@id="LayoutTopMicroRoot"]/div/div/div/div/div[2]/div[1]/a[1]/span'));
         let dollarValue = 'Не найден';
 
         if (elements.length > 0) {
             dollarValue = await elements[0].getText();
+            console.log(dollarValue);
         }
-
+console.log(dollarValue);
         // === ОЧИСТКА ЗНАЧЕНИЯ КУРСА ===
         let cleanRate = dollarValue;
         if (dollarValue !== 'Не найден') {
@@ -81,13 +82,14 @@ describe('Проверка yandex страницы', function () {
             // .replace('.', ',');      // заменяем запятую на точку (для числа)
         }
         // Попытка найти элемент с курсом euro
-        const elements1 = await driver.findElements(By.xpath('/html/body/div[8]/div[2]/div[1]/div/div[1]/div/div/div[1]/div[2]/div[1]/a[2]/span'));
+        const elements1 = await driver.findElements(By.xpath('/html/body/div[9]/div[2]/div[1]/div/div/div/div/div/div[2]/div[1]/a[2]/span'));
         let euroValue = 'Не найден';
 
         if (elements1.length > 0) {
             euroValue = await elements1[0].getText();
+            console.log(euroValue);
         }
-
+console.log(euroValue);
         // === ОЧИСТКА ЗНАЧЕНИЯ КУРСА ===
         let cleanRate1 = euroValue;
         if (euroValue !== 'Не найден') {
